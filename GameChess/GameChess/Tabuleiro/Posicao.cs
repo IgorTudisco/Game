@@ -1,6 +1,6 @@
 ﻿
 
-namespace Tabuleiro
+namespace tabuleiro
 {
     class Posicao
     {
