@@ -9,6 +9,8 @@ namespace GameChess
         {
             Tabuleiro tab = new Tabuleiro(8, 8);
 
+            Tela.imprimirtabuleiro(tab);
+
             Console.ReadLine();
 
         }
