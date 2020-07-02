@@ -1,5 +1,7 @@
 ﻿using System;
+using System.Runtime.InteropServices.WindowsRuntime;
 using tabuleiro;
+using Xadrez;
 
 // Como é uma classe de manipulação de tela, ela fica junto a classe programa.
 
@@ -20,7 +22,7 @@ namespace GameChess
                 {
                     if (tab.peca(i, j) == null)
                     {
-                        Console.Write(" -" + " ");
+                        Console.Write("-" + " ");
                     }
                     else
                     {
@@ -30,7 +32,17 @@ namespace GameChess
                 }
                 Console.WriteLine();
             }
-            Console.WriteLine("   a  b  c  d  e  f  g  h ");
+            Console.WriteLine("  a b c d e f g h ");
+        }
+
+        // Metodo para ler o teclado do usuario. Irá ler o que for digitado
+
+        public static PosicaoXadrez lerPosicaoXadrez()
+        {
+            string s = Console.ReadLine();
+            char coluna = s[0];
+            int linha = int.Parse(s[1] + " ");
+            return new PosicaoXadrez(coluna, linha);
         }
 
         // criando um metodo para mudar a cor das peças.

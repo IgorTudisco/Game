@@ -21,7 +21,7 @@ namespace Xadrez
 
         public Posicao toPosicao()
         {
-            return new Posicao(8 - linha, coluna - 'a');
+            return new Posicao(coluna - 'a', 8 - linha);
         }
 
         public override string ToString()
