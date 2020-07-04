@@ -1,7 +1,7 @@
 ﻿
 namespace tabuleiro
 {
-    class Peca
+    abstract class Peca
     {
         public Posicao posicao { get; set; }
         public Cor cor { get; protected set; }
@@ -16,11 +16,16 @@ namespace tabuleiro
             this.qteMovimentos = 0;
         }
 
-      public void imcrementarQteMovimentos()
+        public void imcrementarQteMovimentos()
         {
             qteMovimentos++;
         }
 
+        // Criando um metodo abstrato para restringir o movimento da peca (a classe vira abstrata)
+        // de acordo com o tipo da peca Rei, Cavalo... e assim por diante.
+        // Será do tipo bool porque os movimentos vão gerar uma tabela vedade (matriz boleana).
+
+        public abstract bool[,] movimentosPossiveis();
 
     }
 }

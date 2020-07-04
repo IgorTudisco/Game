@@ -7,12 +7,19 @@ namespace tabuleiro
         public int linha { get; set; }
         public int coluna { get; set; }
 
-        public Posicao(int coluna, int linha)
+        public Posicao(int linha, int coluna)
         {
             this.linha = linha;
             this.coluna = coluna;
         }
 
+        // metodo para definir valores
+
+        public void definirValores(int linha, int coluna)
+        {
+            this.linha = linha;
+            this.coluna = coluna;
+        }
 
         public override string ToString()
         {
