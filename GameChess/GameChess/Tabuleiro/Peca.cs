@@ -21,6 +21,31 @@ namespace tabuleiro
             qteMovimentos++;
         }
 
+        // Testando se a peca tem algum movimento possivel
+
+        public bool existeMovimentosPossiveis()
+        {
+            bool[,] mat = movimentosPossiveis();
+            for(int i = 0; i<tab.linhas; i++)
+            {
+                for(int j = 0; j<tab.colunas; j++)
+                {
+                    if (mat[i, j])
+                    {
+                        return true;
+                    }
+                }
+            }
+            return false;
+        }
+
+        // Metodo auxiliar
+
+        public bool podeMoverPara(Posicao pos)
+        {
+            return movimentosPossiveis()[pos.linha, pos.coluna];
+        }
+
         // Criando um metodo abstrato para restringir o movimento da peca (a classe vira abstrata)
         // de acordo com o tipo da peca Rei, Cavalo... e assim por diante.
         // Será do tipo bool porque os movimentos vão gerar uma tabela vedade (matriz boleana).
