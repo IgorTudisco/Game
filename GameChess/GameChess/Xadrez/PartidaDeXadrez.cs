@@ -67,7 +67,7 @@ namespace Xadrez
 
         public void realizarJogada(Posicao origem, Posicao destino)
         {
-           Peca pecaCapturada = executaMovimento(origem, destino);
+            Peca pecaCapturada = executaMovimento(origem, destino);
 
             // condição para impedir um movimento que te coloque em xeque.
 
@@ -86,8 +86,15 @@ namespace Xadrez
                 xeque = false;
             }
 
-            turno++;
-            mudarJogador();
+            if (testeXequeMate(adversaria(jogadorAtual)))
+            {
+                terminada = true;
+            }
+            else
+            {
+                turno++;
+                mudarJogador();
+            }
         }
 
         // Metodo que trata os possíveis erros
@@ -199,15 +206,49 @@ namespace Xadrez
             {
                 throw new TabuleiroException("Não tem rei da " + cor + "no tabuleiro!");
             }
-            foreach(Peca x in pecasEmJogo(adversaria( cor)))
+            foreach (Peca x in pecasEmJogo(adversaria(cor)))
             {
                 bool[,] mat = x.movimentosPossiveis();
-                if(mat[R.posicao.linha, R.posicao.coluna])
+                if (mat[R.posicao.linha, R.posicao.coluna])
                 {
                     return true;
                 }
             }
             return false;
+        }
+
+        // Metodo para testar se tem algum movimento possível que tire o rei do XequeMate.
+
+        public bool testeXequeMate(Cor cor)
+        {
+            if (!estaEmXaque(cor))
+            {
+                return false;
+            }
+            foreach(Peca x in pecasEmJogo(cor))
+            {
+                bool[,] mat = x.movimentosPossiveis();
+
+                for (int i = 0; i < tab.linhas; i++)
+                {
+                    for (int j = 0; j<tab.colunas; j++)
+                    {
+                        if (mat[i, j])
+                        {
+                            Posicao origem = x.posicao;
+                            Posicao destino = new Posicao(i, j);
+                            Peca pecaCapturada = executaMovimento(origem, destino);
+                            bool testeXeque = estaEmXaque(cor);
+                            desfazMovimento(origem, destino, pecaCapturada);
+                            if (!testeXeque)
+                            {
+                                return false;
+                            }
+                        }
+                    }
+                }
+            }
+            return true;
         }
 
         // Metodo auxiliar para colocar as peças no tabuleiro e quardar no HashSet.
@@ -222,21 +263,17 @@ namespace Xadrez
         {
             //Pecas Brancas
 
+            
             colocarNovaPeca(1, 'c', new Torre(tab, Cor.Branca));
-            colocarNovaPeca(2, 'c', new Torre(tab, Cor.Branca));
-            colocarNovaPeca(2, 'd', new Torre(tab, Cor.Branca));
             colocarNovaPeca(1, 'd', new Rei(tab, Cor.Branca));
-            colocarNovaPeca(1, 'e', new Torre(tab, Cor.Branca));
-            colocarNovaPeca(2, 'e', new Torre(tab, Cor.Branca));
+            colocarNovaPeca(7, 'h', new Torre(tab, Cor.Branca));
+            
 
             // Pecas Pretas
 
-            colocarNovaPeca(7, 'c', new Torre(tab, Cor.Preta));
-            colocarNovaPeca(8, 'c', new Torre(tab, Cor.Preta));
-            colocarNovaPeca(7, 'd', new Torre(tab, Cor.Preta));
-            colocarNovaPeca(8, 'd', new Rei(tab, Cor.Preta));
-            colocarNovaPeca(7, 'e', new Torre(tab, Cor.Preta));
-            colocarNovaPeca(8, 'e', new Torre(tab, Cor.Preta));
+            colocarNovaPeca(8, 'a', new Rei(tab, Cor.Preta));
+            colocarNovaPeca(8, 'b', new Torre(tab, Cor.Preta));
+            
         }
 
 
