@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Runtime.InteropServices.WindowsRuntime;
+using System.Collections.Generic;
 using tabuleiro;
 using Xadrez;
 
@@ -9,6 +10,51 @@ namespace GameChess
 {
     class Tela
     {
+        // Metodo para imprimir as informações da partida.
+
+        public static void imprimirPartida(PartidaDeXadrez partida)
+        {
+            imprimirtabuleiro(partida.tab);
+            Console.WriteLine();
+            Console.WriteLine();
+            imprimirPecasCapturadas(partida);
+            Console.WriteLine();
+            Console.WriteLine("Turno: " + partida.turno);
+            Console.WriteLine("Aguardando jogada: " + partida.jogadorAtual);
+        }
+
+        // Metodo para imprimir as peças capturadas de cada cor.
+
+        public static void imprimirPecasCapturadas(PartidaDeXadrez partida)
+        {
+            Console.WriteLine("Peças capturadas:");
+            Console.WriteLine();
+            Console.Write("Brancas: ");
+            imprimirConjunto(partida.pecasCapturadas(Cor.Branca));
+            Console.WriteLine();
+
+            ConsoleColor aux = Console.ForegroundColor;
+            Console.ForegroundColor = ConsoleColor.Yellow;
+
+            Console.Write("Preta: ");
+            imprimirConjunto(partida.pecasCapturadas(Cor.Preta));
+            Console.WriteLine();
+
+            Console.ForegroundColor = aux;
+        }
+
+        // Metodo para imprimir o conjunto das peças capturadas.
+
+        public static void imprimirConjunto(HashSet<Peca> conjunto)
+        {
+            Console.Write("[");
+            foreach(Peca x in conjunto)
+            {
+                Console.Write(x + " ");
+            }
+            Console.Write("]");
+        }
+
         // Sendo static o atributo não precisa ser instanciado
 
         public static void imprimirtabuleiro(Tabuleiro tab)
@@ -72,25 +118,30 @@ namespace GameChess
 
         public static void imprimirPeca(Peca peca)
         {
+
             if (peca == null)
             {
-                Console.Write("- ");
+                ConsoleColor aux = Console.ForegroundColor;
+                Console.ForegroundColor = ConsoleColor.Blue;
+                Console.Write("-");
+                Console.ForegroundColor = aux;
+                
             }
             else
             {
-                if (peca.cor == Cor.Branca)
-                {
-                    Console.Write(peca);
-                }
-                else
+                if (peca.cor == Cor.Preta)
                 {
                     ConsoleColor aux = Console.ForegroundColor;
                     Console.ForegroundColor = ConsoleColor.Yellow;
                     Console.Write(peca);
                     Console.ForegroundColor = aux;
                 }
-                Console.Write(" ");
+                else
+                {
+                    Console.Write(peca);
+                }
             }
+            Console.Write(" ");
         }
 
     }
