@@ -37,7 +37,7 @@ namespace Xadrez
         public Peca executaMovimento(Posicao origem, Posicao destino)
         {
             Peca p = tab.retirarPeca(origem);
-            p.imcrementarQteMovimentos();
+            p.incrementarQteMovimentos();
             Peca pecaCapturada = tab.retirarPeca(destino);
             tab.colocarPeca(p, destino);
             // caso tenha alguma peça na posição de destino, a mesma será capturada e add no HashSet.
@@ -45,6 +45,27 @@ namespace Xadrez
             {
                 capturadas.Add(pecaCapturada);
             }
+
+            // #jogadaespecial Roque Pequeno
+            if(p is Rei && destino.coluna == origem.coluna + 2)
+            {
+                Posicao origemT = new Posicao(origem.linha, origem.coluna + 3);
+                Posicao destinoT = new Posicao(origem.linha, origem.coluna + 1);
+                Peca T = tab.retirarPeca(origemT);
+                T.incrementarQteMovimentos();
+                tab.colocarPeca(T, destinoT);
+            }
+
+            // #jogadaespecial Roque Grande 
+            if (p is Rei && destino.coluna == origem.coluna - 2)
+            {
+                Posicao origemT = new Posicao(origem.linha, origem.coluna - 4);
+                Posicao destinoT = new Posicao(origem.linha, origem.coluna - 1);
+                Peca T = tab.retirarPeca(origemT);
+                T.incrementarQteMovimentos();
+                tab.colocarPeca(T, destinoT);
+            }
+
             return pecaCapturada;
         }
 
@@ -61,6 +82,26 @@ namespace Xadrez
                 capturadas.Remove(pecaCapturada);
             }
             tab.colocarPeca(p, origem);
+
+            // #jogadaespecial Roque Pequeno
+            if (p is Rei && destino.coluna == origem.coluna + 2)
+            {
+                Posicao origemT = new Posicao(origem.linha, origem.coluna + 3);
+                Posicao destinoT = new Posicao(origem.linha, origem.coluna + 1);
+                Peca T = tab.retirarPeca(destinoT);
+                T.decrementarQteMovimentos();
+                tab.colocarPeca(T, origemT);
+            }
+
+            // #jogadaespecial Roque Grande 
+            if (p is Rei && destino.coluna == origem.coluna - 2)
+            {
+                Posicao origemT = new Posicao(origem.linha, origem.coluna - 4);
+                Posicao destinoT = new Posicao(origem.linha, origem.coluna - 1);
+                Peca T = tab.retirarPeca(destinoT);
+                T.decrementarQteMovimentos();
+                tab.colocarPeca(T, origemT);
+            }
         }
 
         // Metodo para que cada jogador jogue uma unica vez.
@@ -267,7 +308,15 @@ namespace Xadrez
             colocarNovaPeca(1, 'b', new Cavalo(tab, Cor.Branca));
             colocarNovaPeca(1, 'c', new Bispo(tab, Cor.Branca));
             colocarNovaPeca(1, 'd', new Dama(tab, Cor.Branca));
-            colocarNovaPeca(1, 'e', new Rei(tab, Cor.Branca));
+
+            /* 
+             * Como foi incluido um atributo que permite o Rei verificar em qual partida ele está,
+             * precisamos estanciar a partida também, já que ela faz parte do construtor do Rei.
+             * Mas, como já estamos na Classe PartidaDeXadrez, colocamos uma auto referência com
+             * a palavra this.
+            */
+            colocarNovaPeca(1, 'e', new Rei(tab, Cor.Branca, this));
+
             colocarNovaPeca(1, 'f', new Bispo(tab, Cor.Branca));
             colocarNovaPeca(1, 'g', new Cavalo(tab, Cor.Branca));
             colocarNovaPeca(1, 'h', new Torre(tab, Cor.Branca));
@@ -287,7 +336,7 @@ namespace Xadrez
             colocarNovaPeca(8, 'b', new Cavalo(tab, Cor.Preta));
             colocarNovaPeca(8, 'c', new Bispo(tab, Cor.Preta));
             colocarNovaPeca(8, 'd', new Dama(tab, Cor.Preta));
-            colocarNovaPeca(8, 'e', new Rei(tab, Cor.Preta));
+            colocarNovaPeca(8, 'e', new Rei(tab, Cor.Preta, this));
             colocarNovaPeca(8, 'f', new Bispo(tab, Cor.Preta));
             colocarNovaPeca(8, 'g', new Cavalo(tab, Cor.Preta));
             colocarNovaPeca(8, 'h', new Torre(tab, Cor.Preta));
@@ -302,9 +351,8 @@ namespace Xadrez
             colocarNovaPeca(7, 'h', new Peao(tab, Cor.Preta));
         }
 
-
-
-
-
     }
+
+
+    
 }
