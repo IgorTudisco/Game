@@ -1,6 +1,4 @@
 ﻿using System.Collections.Generic;
-using System.Runtime.CompilerServices;
-using System.Security.Cryptography.X509Certificates;
 using tabuleiro;
 
 namespace Xadrez
@@ -12,6 +10,8 @@ namespace Xadrez
         public Cor jogadorAtual { get; private set; }
         public bool terminada { get; private set; }
         public bool xeque { get; private set; }
+
+        public Peca vuneravelEnPassant { get; private set; }
 
         // Conjuntos das peças
 
@@ -32,6 +32,7 @@ namespace Xadrez
             colocarPeca();
             terminada = false;
             xeque = false;
+            vuneravelEnPassant = null;
         }
 
         public Peca executaMovimento(Posicao origem, Posicao destino)
@@ -47,7 +48,7 @@ namespace Xadrez
             }
 
             // #jogadaespecial Roque Pequeno
-            if(p is Rei && destino.coluna == origem.coluna + 2)
+            if (p is Rei && destino.coluna == origem.coluna + 2)
             {
                 Posicao origemT = new Posicao(origem.linha, origem.coluna + 3);
                 Posicao destinoT = new Posicao(origem.linha, origem.coluna + 1);
@@ -64,6 +65,25 @@ namespace Xadrez
                 Peca T = tab.retirarPeca(origemT);
                 T.incrementarQteMovimentos();
                 tab.colocarPeca(T, destinoT);
+            }
+
+            // #jogadaespecial En Passant
+            if (p is Peao)
+            {
+                if (origem.coluna != destino.coluna && pecaCapturada == null)
+                {
+                    Posicao posP;
+                    if(p.cor == Cor.Branca)
+                    {
+                        posP = new Posicao(destino.linha + 1, destino.coluna);
+                    }
+                    else
+                    {
+                        posP = new Posicao(destino.linha - 1, destino.coluna);
+                    }
+                    pecaCapturada = tab.retirarPeca(posP);
+                    capturadas.Add(pecaCapturada);
+                }
             }
 
             return pecaCapturada;
@@ -102,6 +122,26 @@ namespace Xadrez
                 T.decrementarQteMovimentos();
                 tab.colocarPeca(T, origemT);
             }
+
+            // #jogadaespecial En Passant
+            if (p is Peao)
+            {
+                if(origem.coluna != destino.coluna && pecaCapturada == vuneravelEnPassant)
+                {
+                    Peca peao = tab.retirarPeca(destino);
+                    Posicao posP;
+                    if(p.cor == Cor.Branca)
+                    {
+                        posP = new Posicao(3, destino.coluna);
+                    }
+                    else
+                    {
+                        posP = new Posicao(4, destino.coluna);
+                    }
+                    tab.colocarPeca(peao, posP);
+                }
+            }
+
         }
 
         // Metodo para que cada jogador jogue uma unica vez.
@@ -136,6 +176,20 @@ namespace Xadrez
                 turno++;
                 mudarJogador();
             }
+
+            // #jogadaespecial En Passant
+
+            Peca p = tab.peca(destino);
+
+            if (p is Peao && (destino.linha == origem.linha - 2 || destino.linha == origem.linha + 2))
+            {
+                vuneravelEnPassant = p;
+            }
+            else
+            {
+                vuneravelEnPassant = null;
+            }
+
         }
 
         // Metodo que trata os possíveis erros
@@ -266,13 +320,13 @@ namespace Xadrez
             {
                 return false;
             }
-            foreach(Peca x in pecasEmJogo(cor))
+            foreach (Peca x in pecasEmJogo(cor))
             {
                 bool[,] mat = x.movimentosPossiveis();
 
                 for (int i = 0; i < tab.linhas; i++)
                 {
-                    for (int j = 0; j<tab.colunas; j++)
+                    for (int j = 0; j < tab.colunas; j++)
                     {
                         if (mat[i, j])
                         {
@@ -321,14 +375,16 @@ namespace Xadrez
             colocarNovaPeca(1, 'g', new Cavalo(tab, Cor.Branca));
             colocarNovaPeca(1, 'h', new Torre(tab, Cor.Branca));
 
-            colocarNovaPeca(2, 'a', new Peao(tab, Cor.Branca));
-            colocarNovaPeca(2, 'b', new Peao(tab, Cor.Branca));
-            colocarNovaPeca(2, 'c', new Peao(tab, Cor.Branca));
-            colocarNovaPeca(2, 'd', new Peao(tab, Cor.Branca));
-            colocarNovaPeca(2, 'e', new Peao(tab, Cor.Branca));
-            colocarNovaPeca(2, 'f', new Peao(tab, Cor.Branca));
-            colocarNovaPeca(2, 'g', new Peao(tab, Cor.Branca));
-            colocarNovaPeca(2, 'h', new Peao(tab, Cor.Branca));
+            // Por conta da sua jogada especial o peao também recebe uma auto referência.
+
+            colocarNovaPeca(2, 'a', new Peao(tab, Cor.Branca, this));
+            colocarNovaPeca(2, 'b', new Peao(tab, Cor.Branca, this));
+            colocarNovaPeca(2, 'c', new Peao(tab, Cor.Branca, this));
+            colocarNovaPeca(2, 'd', new Peao(tab, Cor.Branca, this));
+            colocarNovaPeca(2, 'e', new Peao(tab, Cor.Branca, this));
+            colocarNovaPeca(2, 'f', new Peao(tab, Cor.Branca, this));
+            colocarNovaPeca(2, 'g', new Peao(tab, Cor.Branca, this));
+            colocarNovaPeca(2, 'h', new Peao(tab, Cor.Branca, this));
 
             // Pecas Pretas
 
@@ -341,18 +397,18 @@ namespace Xadrez
             colocarNovaPeca(8, 'g', new Cavalo(tab, Cor.Preta));
             colocarNovaPeca(8, 'h', new Torre(tab, Cor.Preta));
 
-            colocarNovaPeca(7, 'a', new Peao(tab, Cor.Preta));
-            colocarNovaPeca(7, 'b', new Peao(tab, Cor.Preta));
-            colocarNovaPeca(7, 'c', new Peao(tab, Cor.Preta));
-            colocarNovaPeca(7, 'd', new Peao(tab, Cor.Preta));
-            colocarNovaPeca(7, 'e', new Peao(tab, Cor.Preta));
-            colocarNovaPeca(7, 'f', new Peao(tab, Cor.Preta));
-            colocarNovaPeca(7, 'g', new Peao(tab, Cor.Preta));
-            colocarNovaPeca(7, 'h', new Peao(tab, Cor.Preta));
+            colocarNovaPeca(7, 'a', new Peao(tab, Cor.Preta, this));
+            colocarNovaPeca(7, 'b', new Peao(tab, Cor.Preta, this));
+            colocarNovaPeca(7, 'c', new Peao(tab, Cor.Preta, this));
+            colocarNovaPeca(7, 'd', new Peao(tab, Cor.Preta, this));
+            colocarNovaPeca(7, 'e', new Peao(tab, Cor.Preta, this));
+            colocarNovaPeca(7, 'f', new Peao(tab, Cor.Preta, this));
+            colocarNovaPeca(7, 'g', new Peao(tab, Cor.Preta, this));
+            colocarNovaPeca(7, 'h', new Peao(tab, Cor.Preta, this));
         }
 
     }
 
 
-    
+
 }
