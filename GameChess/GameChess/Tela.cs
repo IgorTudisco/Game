@@ -60,7 +60,7 @@ namespace GameChess
         public static void imprimirConjunto(HashSet<Peca> conjunto)
         {
             Console.Write("[");
-            foreach(Peca x in conjunto)
+            foreach (Peca x in conjunto)
             {
                 Console.Write(x + " ");
             }
@@ -133,11 +133,11 @@ namespace GameChess
 
             if (peca == null)
             {
-                ConsoleColor aux = Console.ForegroundColor;
+                ConsoleColor aux2 = Console.ForegroundColor;
                 Console.ForegroundColor = ConsoleColor.Blue;
                 Console.Write("-");
-                Console.ForegroundColor = aux;
-                
+                Console.ForegroundColor = aux2;
+
             }
             else
             {
